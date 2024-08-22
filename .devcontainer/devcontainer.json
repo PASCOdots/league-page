@@ -1,0 +1,6 @@
+{
+  "name": "foosball front",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev_foosball_front",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}
