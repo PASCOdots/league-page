@@ -262,6 +262,7 @@
         </div>
       </div>
     {/each}
+
     {#if !expandOverride}
       <div class="foot">
         <div

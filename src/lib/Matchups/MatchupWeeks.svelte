@@ -22,7 +22,7 @@
       queryWeek = week;
       displayWeek = queryWeek * 1;
       if (isContent) {
-        goto(`/content?week=${queryWeek}`, { noscroll: true });
+        goto(`/comish?week=${queryWeek}`, { noscroll: true });
       } else {
         goto(`/matchups?week=${queryWeek}`, { noscroll: true });
       }
@@ -63,7 +63,7 @@
     processDisplayMatchup(displayWeek);
     active = null;
     if (isContent) {
-      goto(`/content?week=${queryWeek}`, { noscroll: true });
+      goto(`/comish?week=${queryWeek}`, { noscroll: true });
     } else {
       goto(`/matchups?week=${queryWeek}`, { noscroll: true });
     }
@@ -108,13 +108,14 @@
 
 <style>
   .matchups {
-    margin: 2em 0 6em;
+    /* margin: 2em 0 6em; */
+    margin: 0;
   }
   .weekContainer {
     display: flex;
     width: 95%;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 0;
     align-items: center;
   }
 

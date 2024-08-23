@@ -80,7 +80,7 @@ export const tabs = [
   },
   {
     icon: "chat_bubble",
-    label: "Content",
-    dest: "/content",
+    label: "Comish",
+    dest: "/comish",
   },
 ];

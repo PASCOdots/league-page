@@ -16,4 +16,4 @@ export const posts = writable([]);
 export const brackets = writable({});
 export const standingsStore = writable({});
 
-export const content = writable({});
+export const comish = writable({});
