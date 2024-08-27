@@ -42,6 +42,8 @@
     players = playersInfo.players;
     loading = false;
 
+    // console.log(leagueTeamManagers);
+
     // if (playersInfo.stale) {
     //   const newPlayersInfo = await loadPlayers(null, true);
     //   players = newPlayersInfo.players;
@@ -386,13 +388,6 @@
         </div>
         <div class="flex-container">
           <div>
-            <!-- <textarea
-              class="full-width-textarea"
-              rows="5"
-              placeholder="Fantasy Implications..."
-              disabled={!home}
-              bind:value={homeFantasyImplications}
-            /> -->
             <Textfield
               textarea
               style="width: 100%; margin-bottom: 5px;"
@@ -445,8 +440,11 @@
       </div>
     </div>
   </div>
-{:else}
-  <League />
+{:else if leagueTeamManagers}
+  <League
+    homeUsers={leagueTeamManagers.users}
+    homeLeagueID={leagueTeamManagers.leagueID}
+  />
 {/if}
 
 <style>
@@ -487,13 +485,9 @@
   .flex-container {
     width: 100%;
     display: flex;
-    align-content: center;
+    align-items: center;
     justify-content: space-evenly;
     padding: 10px;
-  }
-
-  .full-width-textarea {
-    width: 100%;
   }
 
   .horizontal-list {
@@ -510,9 +504,5 @@
 
   .half {
     width: 50%;
-  }
-
-  .mb {
-    margin-bottom: -3px;
   }
 </style>
