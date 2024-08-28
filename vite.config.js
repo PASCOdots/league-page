@@ -9,3 +9,12 @@ const config = {
 };
 
 export default config;
+
+// import { svelte } from "@sveltejs/vite-plugin-svelte";
+
+// export default {
+//   server: {
+//     host: true,
+//   },
+//   plugins: [svelte()],
+// };

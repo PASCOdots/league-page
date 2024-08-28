@@ -69,7 +69,7 @@
   "type": "module",
   "dependencies": {
     "@smui/button": "6.0.0-beta.13",
-    "@smui/data-table": "6.0.0-beta.13",
+    "@smui/data-table": "^6.0.0-beta.13",
     "@smui/dialog": "6.0.0-beta.13",
     "@smui/drawer": "6.0.0-beta.13",
     "@smui/icon-button": "6.0.0-beta.13",

@@ -106,11 +106,9 @@
   });
 
   const updateUsersNames = async (e, user_id, leagueIdx) => {
-    const users = [...leagues[leagueIdx].users];
-    const player = users.find((i) => i.user_id === user_id);
-    player.humanName = e.target.value;
+    const humanName = e.target.value;
 
-    const res = await fetch(import.meta.env.VITE_BACKEND_URL + "/user", {
+    await fetch(import.meta.env.VITE_BACKEND_URL + "/user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,9 +118,14 @@
           id: leagues[leagueIdx].id,
         },
         id: user_id,
-        human_name: player.humanName,
+        human_name: humanName,
       }),
     });
+
+    const users = [...leagues[leagueIdx].users];
+    const player = users.find((i) => i.user_id === user_id);
+    player.humanName = humanName;
+
     updateLeage(leagueIdx, "users", users);
   };
 </script>

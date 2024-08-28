@@ -13,26 +13,55 @@ export const getLeagueTeamManagers = async () => {
   let teamManagersMap = {};
   let finalUsers = {};
   let currentSeason = null;
+  const pascoUsers = {};
+  const awayRosterIDtoUserID = {};
 
   // loop through all seasons and create a [year][roster_id]: team, managers object
   while (currentLeagueID && currentLeagueID != 0) {
-    const [usersRaw, leagueData, rostersRaw] = await waitForAll(
+    const awayLeagueID =
+      currentLeagueID === import.meta.env.VITE_LEAGUE_ID_PAP
+        ? import.meta.env.VITE_LEAGUE_ID_PI
+        : import.meta.env.VITE_LEAGUE_ID_PAP;
+    console.log("awayLeagueID >> ", awayLeagueID);
+
+    const [
+      usersRaw,
+      leagueData,
+      rostersRaw,
+      awayRostersRaw,
+      pascoUsersRaw,
+    ] = await waitForAll(
       fetch(`https://api.sleeper.app/v1/league/${currentLeagueID}/users`, {
         compress: true,
       }),
       getLeagueData(currentLeagueID),
       fetch(`https://api.sleeper.app/v1/league/${currentLeagueID}/rosters`, {
         compress: true,
-      })
+      }),
+      fetch(`https://api.sleeper.app/v1/league/${awayLeagueID}/rosters`, {
+        compress: true,
+      }),
+      fetch(import.meta.env.VITE_BACKEND_URL + "/users")
     ).catch((err) => {
       console.error(err);
     });
 
-    const [users, rosters] = await waitForAll(
+    const [users, rosters, awayRostersArr, pascoUsersArr] = await waitForAll(
+      // const [users, rosters] = await waitForAll(
       usersRaw.json(),
-      rostersRaw.json()
+      rostersRaw.json(),
+      awayRostersRaw.json(),
+      pascoUsersRaw.json()
     ).catch((err) => {
       console.error(err);
+    });
+
+    pascoUsersArr.forEach((i) => {
+      pascoUsers[i.id] = i.human_name;
+    });
+
+    awayRostersArr.forEach((i) => {
+      awayRosterIDtoUserID[i.roster_id] = i.owner_id;
     });
 
     const year = parseInt(leagueData.season);
@@ -60,6 +89,8 @@ export const getLeagueTeamManagers = async () => {
     teamManagersMap,
     users: finalUsers,
     leagueID,
+    pascoUsers,
+    awayRosterIDtoUserID,
   };
   teamManagersStore.update(() => response);
   return response;

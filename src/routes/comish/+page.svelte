@@ -62,12 +62,12 @@
   };
   let topThreeHome = [];
   let topThreeAway = [];
-  let homeFantasyImplications = "";
-  let homeLessonsLearned = "";
+  let fantasyImplications = "";
   let homeBenchProblems = "";
-  let awayFantasyImplications = "";
-  let awayLessonsLearned = "";
   let awayBenchProblems = "";
+  let homeTurningPoints = "";
+  let awayTurningPoints = "";
+  let lessonsLearned = "";
 
   const splitTeamsStarters = (starters) => {
     const homeStarters = [];
@@ -153,12 +153,15 @@
     topThreeHome = [];
     topThreeAway = [];
 
-    homeFantasyImplications = "";
-    homeLessonsLearned = "";
+    fantasyImplications =
+      "With this win, Tua Be or Dobbs to Be becomes the champion of the league. Unknown Team slides into second place.";
+    lessonsLearned = "";
     homeBenchProblems = "";
-    awayFantasyImplications = "";
-    awayLessonsLearned = "";
     awayBenchProblems = "";
+    homeTurningPoints =
+      "The last minute addition of Zamir White proved valuable. Davante Adams had his second best game of the season. Every skill position player scored double digit points";
+    awayTurningPoints =
+      "Austin Ekeler, Jahmyr Gibbs, and Odell Beckham each failed to outscore this team's kicker and 50% of the team failed to reach double digits. Even with 30 points on the bench in Jerome Ford, this team had no chance against their unstoppable opponent";
 
     home.score = home.points.reduce((a, b) => a + b).toFixed(2);
     away.score = away.points.reduce((a, b) => a + b).toFixed(2);
@@ -204,7 +207,9 @@
   };
 
   const submit = async () => {
-    // console.log(home);
+    console.log(home);
+    console.log(leagueTeamManagers);
+
     // console.log(data);
 
     const payload = {};
@@ -212,25 +217,29 @@
       roster_id: home.roster_id,
       teamName: home.manager.name,
       managerName: getManagerName(home.manager.name),
+      humanName: leagueTeamManagers.pascoUsers[home.manager.user_id],
+      user_id: home.manager.user_id,
       score: home.score,
       top3: topThreeHome,
-      homeFantasyImplications,
-      homeLessonsLearned,
-      homeBenchProblems,
+      benchProblems: homeBenchProblems,
+      turningPoints: homeTurningPoints,
     };
 
     payload.away = {
       roster_id: away.roster_id,
       teamName: away.manager.name,
       managerName: getManagerName(away.manager.name),
+      humanName: leagueTeamManagers.pascoUsers[home.manager.user_id],
+      user_id: home.manager.user_id,
       score: away.score,
       top3: topThreeAway,
-      awayFantasyImplications,
-      awayLessonsLearned,
-      awayBenchProblems,
+      benchProblems: awayBenchProblems,
+      turningPoints: awayTurningPoints,
     };
 
     payload.week = queryWeek;
+    payload.lessonsLearned = lessonsLearned;
+    payload.fantasyImplications = fantasyImplications;
 
     // convert the top 3's projection to the calculated projection %
     payload.home.top3.forEach((i) => {
@@ -245,6 +254,14 @@
     });
 
     console.log(payload);
+    const res = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/generate-weekly",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
   };
 </script>
 
@@ -386,54 +403,75 @@
             </ol>
           </div>
         </div>
-        <div class="flex-container">
-          <div>
-            <Textfield
-              textarea
-              style="width: 100%; margin-bottom: 5px;"
-              bind:value={homeFantasyImplications}
-              label="Fantasy Implications..."
-              disabled={!home}
-            />
-            <Textfield
+        <div class="flex-container" style="padding: 0px;">
+          <!-- <div> -->
+          <!-- <Textfield
+            textarea
+            style="width: 100%; margin-bottom: 5px;"
+            bind:value={fantasyImplications}
+            label="Fantasy Implications..."
+            disabled={!home}
+          /> -->
+          <!-- <Textfield
               textarea
               style="width: 100%; margin-bottom: 5px;"
               bind:value={homeLessonsLearned}
               label="Lessons Learned..."
               disabled={!home}
-            />
-            <Textfield
-              textarea
-              style="width: 100%; margin-bottom: 5px;"
-              bind:value={homeBenchProblems}
-              label="Bench/Roster Challenges..."
-              disabled={!home}
-            />
-          </div>
-          <div>
-            <Textfield
-              textarea
-              style="width: 100%; margin-bottom: 5px;"
-              bind:value={awayFantasyImplications}
-              label="Fantasy Implications..."
-              disabled={!home}
-            />
-            <Textfield
-              textarea
-              style="width: 100%; margin-bottom: 5px;"
-              bind:value={awayLessonsLearned}
-              label="Lessons Learned..."
-              disabled={!home}
-            />
-            <Textfield
-              textarea
-              style="width: 100%; margin-bottom: 5px;"
-              bind:value={awayBenchProblems}
-              label="Bench/Roster Challenges..."
-              disabled={!home}
-            />
-          </div>
+            /> -->
+          <Textfield
+            textarea
+            style="width: 100%; margin-bottom: 5px;"
+            bind:value={homeTurningPoints}
+            label="Turning Points/Critical Moments..."
+            disabled={!home}
+          />
+          <Textfield
+            textarea
+            style="width: 100%; margin-bottom: 5px;"
+            bind:value={homeBenchProblems}
+            label="Bench/Roster Challenges..."
+            disabled={!home}
+          />
         </div>
+        <div class="flex-container" style="padding: 0px;">
+          <!-- <Textfield
+            textarea
+            style="width: 100%; margin-bottom: 5px;"
+            bind:value={awayFantasyImplications}
+            label="Fantasy Implications..."
+            disabled={!home}
+          /> -->
+          <Textfield
+            textarea
+            style="width: 100%; margin-bottom: 5px;"
+            bind:value={awayTurningPoints}
+            label="Turning Points/Critical Moments..."
+            disabled={!home}
+          />
+          <Textfield
+            textarea
+            style="width: 100%; margin-bottom: 5px;"
+            bind:value={awayBenchProblems}
+            label="Bench/Roster Challenges..."
+            disabled={!home}
+          />
+          <!-- </div> -->
+        </div>
+        <Textfield
+          textarea
+          style="width: 100%; margin-bottom: 5px;"
+          bind:value={lessonsLearned}
+          label="Lessons Learned..."
+          disabled={!home}
+        />
+        <Textfield
+          textarea
+          style="width: 100%; margin-bottom: 5px;"
+          bind:value={fantasyImplications}
+          label="Fantasy Implications"
+          disabled={!home}
+        />
         <Button style="width: 100%" on:click={submit} variant="raised">
           <Label>Generate</Label>
         </Button>

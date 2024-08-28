@@ -141,7 +141,14 @@
   <div class="header" on:click={() => expandClose()} bind:this={el}>
     <div class="opponent home{winning == 'home' ? ' homeGlow' : ''}">
       <img class="avatar" src={home.manager.avatar} alt="home team avatar" />
-      <div class="name">{home.manager.name}</div>
+      <div>
+        <div class="name">{home.manager.name}</div>
+        {#if leagueTeamManagers.pascoUsers}<span
+            class="totalProjection"
+            style="margin-left: 5px;"
+            >{leagueTeamManagers.pascoUsers[home.manager.user_id]}</span
+          >{/if}
+      </div>
       <div class="totalPoints totalPointsR">
         {round(homePointsTotal)}
         <div class="totalProjection">{round(homeProjectionTotal)}</div>
@@ -153,7 +160,16 @@
         {round(awayPointsTotal)}
         <div class="totalProjection">{round(awayProjectionTotal)}</div>
       </div>
-      <div class="name">{away.manager.name}</div>
+      <div>
+        <div class="name">{away.manager.name}</div>
+        {#if leagueTeamManagers.pascoUsers}<span
+            class="totalProjection"
+            style="margin-right: 5px;"
+            >{leagueTeamManagers.pascoUsers[
+              leagueTeamManagers.awayRosterIDtoUserID[away.roster_id]
+            ]}</span
+          >{/if}
+      </div>
       <img class="avatar" src={away.manager.avatar} alt="away team avatar" />
     </div>
   </div>

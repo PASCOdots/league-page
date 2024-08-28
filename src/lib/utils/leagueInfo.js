@@ -1,5 +1,5 @@
 /*   STEP 1   */
-export const leagueID = import.meta.env.VITE_LEAGUE_ID; //"your_league_id"; // your league ID
+export const leagueID = import.meta.env.VITE_LEAGUE_ID_PAP; //"your_league_id"; // your league ID
 export const leagueName = import.meta.env.VITE_LEAGUE_NAME; //"your_league_name"; // your league name
 export const dues = 100; // (optional) used in template constitution page
 export const dynasty = true; // true for dynasty leagues, false for redraft and keeper
