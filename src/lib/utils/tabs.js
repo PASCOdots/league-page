@@ -37,11 +37,6 @@ export const tabs = [
         dest: "/managers",
       },
       {
-        icon: "local_fire_department",
-        label: "Rivalry",
-        dest: "/rivalry",
-      },
-      {
         icon: "leaderboard",
         label: "Standings",
         dest: "/standings",
@@ -61,22 +56,7 @@ export const tabs = [
         label: "Records",
         dest: "/records",
       },
-      {
-        icon: "history_edu",
-        label: "Constitution",
-        dest: "/constitution",
-      },
-      {
-        icon: "sports_football",
-        label: "Go to Sleeper",
-        dest: `https://sleeper.app/leagues/${leagueID}`,
-      },
     ],
-  },
-  {
-    icon: "lightbulb",
-    label: "Resources",
-    dest: "/resources",
   },
   {
     icon: "chat_bubble",

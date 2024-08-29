@@ -22,7 +22,6 @@ export const getLeagueTeamManagers = async () => {
       currentLeagueID === import.meta.env.VITE_LEAGUE_ID_PAP
         ? import.meta.env.VITE_LEAGUE_ID_PI
         : import.meta.env.VITE_LEAGUE_ID_PAP;
-    console.log("awayLeagueID >> ", awayLeagueID);
 
     const [
       usersRaw,

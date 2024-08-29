@@ -1,9 +1,40 @@
 /*   STEP 1   */
-export const leagueID = import.meta.env.VITE_LEAGUE_ID_PAP; //"your_league_id"; // your league ID
+export let leagueID = import.meta.env.VITE_LEAGUE_ID_PAP; //"your_league_id"; // your league ID
 export const leagueName = import.meta.env.VITE_LEAGUE_NAME; //"your_league_name"; // your league name
 export const dues = 100; // (optional) used in template constitution page
 export const dynasty = true; // true for dynasty leagues, false for redraft and keeper
 export const enableBlog = false; // requires VITE_CONTENTFUL_ACCESS_TOKEN and VITE_CONTENTFUL_SPACE environment variables
+
+(() => {
+  if (typeof localStorage !== "undefined") {
+    const myleagueid = localStorage.getItem("myLeagueID");
+    if (myleagueid) {
+      leagueID = myleagueid;
+    } else {
+      leagueID = import.meta.env.VITE_LEAGUE_ID_PAP;
+    }
+  } else {
+    console.log("nope");
+  }
+})();
+
+export const switchLeagues = () => {
+  if (leagueID === import.meta.env.VITE_LEAGUE_ID_PAP) {
+    localStorage.setItem("myLeagueID", import.meta.env.VITE_LEAGUE_ID_PI);
+  } else {
+    localStorage.setItem("myLeagueID", import.meta.env.VITE_LEAGUE_ID_PAP);
+  }
+
+  window.location.href = "/";
+};
+
+// export const updateLeagueID = () => {
+//   if (leagueID === import.meta.env.VITE_LEAGUE_ID_PAP) {
+//     leagueID = import.meta.env.VITE_LEAGUE_ID_PI;
+//   } else {
+//     leagueID = import.meta.env.VITE_LEAGUE_ID_PAP;
+//   }
+// };
 
 /*   STEP 2   */
 export const homepageText = import.meta.env.VITE_HOMEPAGE_TEXT;
