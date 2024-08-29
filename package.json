@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@smui/form-field": "^7.0.0",
+    "@smui/slider": "^7.0.0",
     "@sveltejs/adapter-node": "^1.2.3",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",

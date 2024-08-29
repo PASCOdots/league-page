@@ -6,6 +6,7 @@
   import Tab, { Label } from "@smui/tab";
   import CheckBox from "@smui/checkbox";
   import Textfield from "@smui/textfield";
+  import Slider from "@smui/slider";
   import FormField from "@smui/form-field";
   import League from "./League.svelte";
 
@@ -68,6 +69,10 @@
   let homeTurningPoints = "";
   let awayTurningPoints = "";
   let lessonsLearned = "";
+  let spiceLevel = 1.2;
+
+  let disableGenerate = true;
+  let rundown = "";
 
   const splitTeamsStarters = (starters) => {
     const homeStarters = [];
@@ -155,7 +160,8 @@
 
     fantasyImplications =
       "With this win, Tua Be or Dobbs to Be becomes the champion of the league. Unknown Team slides into second place.";
-    lessonsLearned = "";
+    lessonsLearned =
+      "Don't stick your hand in a powered sink garbage disposal.";
     homeBenchProblems = "";
     awayBenchProblems = "";
     homeTurningPoints =
@@ -175,11 +181,10 @@
 
   const toggleTop3 = (event, starter, team) => {
     const { checked } = event.target;
-    console.log(checked, starter, team);
-
     if (team === "home") {
       // console.log(home.starters[starter.idx]);
       if (checked) {
+        starter.points = starter.points.toString();
         topThreeHome = [...topThreeHome, starter];
       } else {
         topThreeHome = topThreeHome.filter((i) => i.idx !== starter.idx);
@@ -188,10 +193,17 @@
       // console.log(away.starters[starter.idx]);
 
       if (checked) {
+        starter.points = starter.points.toString();
         topThreeAway = [...topThreeAway, starter];
       } else {
         topThreeAway = topThreeAway.filter((i) => i.idx !== starter.idx);
       }
+    }
+
+    if (topThreeHome.length >= 3 && topThreeAway.length >= 3) {
+      disableGenerate = false;
+    } else {
+      disableGenerate = true;
     }
   };
 
@@ -207,9 +219,7 @@
   };
 
   const submit = async () => {
-    console.log(home);
-    console.log(leagueTeamManagers);
-
+    disableGenerate = true;
     // console.log(data);
 
     const payload = {};
@@ -237,6 +247,7 @@
       turningPoints: awayTurningPoints,
     };
 
+    payload.spiceLevel = spiceLevel;
     payload.week = queryWeek;
     payload.lessonsLearned = lessonsLearned;
     payload.fantasyImplications = fantasyImplications;
@@ -253,7 +264,6 @@
       ).points; // stored the calc in points;
     });
 
-    console.log(payload);
     const res = await fetch(
       import.meta.env.VITE_BACKEND_URL + "/generate-weekly",
       {
@@ -262,6 +272,9 @@
         body: JSON.stringify(payload),
       }
     );
+
+    rundown = await res.text();
+    disableGenerate = false;
   };
 </script>
 
@@ -286,195 +299,195 @@
 
 {#if active === "Content"}
   <div id="main">
-    {#if !loading}
-      <MatchupWeeks
-        {players}
-        {queryWeek}
-        {matchupWeeks}
-        {regularSeasonLength}
-        {year}
-        {week}
-        selection="regular"
-        {leagueTeamManagers}
-        isContent={true}
-        {logMatchupContent}
-      />
-    {/if}
+    <div style="width: 20%">
+      {#if !loading}
+        <MatchupWeeks
+          {players}
+          {queryWeek}
+          {matchupWeeks}
+          {regularSeasonLength}
+          {year}
+          {week}
+          selection="regular"
+          {leagueTeamManagers}
+          isContent={true}
+          {logMatchupContent}
+        />
+      {/if}
+    </div>
     <div class="scores-container">
       <div class="scores">
         <div class="flex-container">
           {#if home}
-            <p class="half" style="text-align:center;">
-              Home Score {home && home.points ? home.score : "-"}
-            </p>
-            <p class="half" style="text-align:center;">
-              Away Score {away && away.points ? away.score : "-"}
-            </p>
+            <div class="half">
+              <p>Home Score {home && home.points ? home.score : "-"}</p>
+
+              <div class="flex-container">
+                <div class="score-box">
+                  <p>Sorted by points home</p>
+                  {#each sortedStartersByPoints.home as starter}
+                    <FormField align="start" style="width: 100%">
+                      <CheckBox
+                        cl
+                        touch
+                        checked={topThreeHome.find(
+                          (i) => i.idx === starter.idx
+                        ) !== undefined}
+                        on:change={(e) => toggleTop3(e, starter, "home")}
+                      />
+                      <span slot="label">{starter.name} - {starter.points}</span
+                      >
+                    </FormField>
+                  {/each}
+                </div>
+
+                <div class="score-box">
+                  <p>Sorted by projections home</p>
+                  {#each sortedStartersByProjections.home as starter}
+                    <FormField align="start" style="width: 100%">
+                      <CheckBox
+                        cl
+                        touch
+                        checked={topThreeHome.find(
+                          (i) => i.idx === starter.idx
+                        ) !== undefined}
+                        on:change={(e) => toggleTop3(e, starter, "home")}
+                      />
+                      <span slot="label">{starter.name} - {starter.points}</span
+                      >
+                    </FormField>
+                  {/each}
+                </div>
+              </div>
+
+              <ol class="horizontal-list">
+                {#each topThreeHome as topHome}
+                  <li>{topHome.name}</li>
+                {/each}
+              </ol>
+            </div>
+
+            <div class="half">
+              <p>Away Score {away && away.points ? away.score : "-"}</p>
+
+              <div class="flex-container">
+                <div class="score-box">
+                  <p>Sorted by points away</p>
+                  {#each sortedStartersByPoints.away as starter}
+                    <FormField align="start" style="width: 100%">
+                      <CheckBox
+                        cl
+                        touch
+                        checked={topThreeAway.find(
+                          (i) => i.idx === starter.idx
+                        ) !== undefined}
+                        on:change={(e) => toggleTop3(e, starter, "away")}
+                      />
+                      <span slot="label">{starter.name} - {starter.points}</span
+                      >
+                    </FormField>
+                  {/each}
+                </div>
+                <div class="score-box">
+                  <p>Sorted by projections away</p>
+                  {#each sortedStartersByProjections.away as starter}
+                    <FormField align="start" style="width: 100%">
+                      <CheckBox
+                        cl
+                        touch
+                        checked={topThreeAway.find(
+                          (i) => i.idx === starter.idx
+                        ) !== undefined}
+                        on:change={(e) => toggleTop3(e, starter, "away")}
+                      />
+                      <span slot="label" style="height: 20px">
+                        {starter.name} - {starter.points}</span
+                      >
+                    </FormField>
+                  {/each}
+                </div>
+              </div>
+
+              <ol class="horizontal-list">
+                {#each topThreeAway as topAway}
+                  <li>{topAway.name}</li>
+                {/each}
+              </ol>
+            </div>
           {/if}
         </div>
         <div class="flex-container">
-          <div class="flex-container">
-            <div class="score-box">
-              <p>Sorted by points home</p>
-              {#each sortedStartersByPoints.home as starter}
-                <FormField>
-                  <CheckBox
-                    cl
-                    touch
-                    checked={topThreeHome.find((i) => i.idx === starter.idx) !==
-                      undefined}
-                    style="padding: 5px;"
-                    on:change={(e) => toggleTop3(e, starter, "home")}
-                  />
-                  <span slot="label">{starter.name} - {starter.points}</span>
-                </FormField>
-              {/each}
-            </div>
-            <div>
-              <p>Sorted by projections home</p>
-              {#each sortedStartersByProjections.home as starter}
-                <FormField>
-                  <CheckBox
-                    cl
-                    style="padding: 5px;"
-                    touch
-                    checked={topThreeHome.find((i) => i.idx === starter.idx) !==
-                      undefined}
-                    on:change={(e) => toggleTop3(e, starter, "home")}
-                  />
-                  <span slot="label">{starter.name} - {starter.points}</span>
-                </FormField>
-              {/each}
-            </div>
-          </div>
-          <div class="flex-container">
-            <div class="score-box">
-              <p>Sorted by points away</p>
-              {#each sortedStartersByPoints.away as starter}
-                <div>
-                  <FormField>
-                    <CheckBox
-                      cl
-                      style="padding: 5px;"
-                      touch
-                      checked={topThreeAway.find(
-                        (i) => i.idx === starter.idx
-                      ) !== undefined}
-                      on:change={(e) => toggleTop3(e, starter, "away")}
-                    />
-                    <span slot="label">{starter.name} - {starter.points}</span>
-                  </FormField>
-                </div>
-              {/each}
-            </div>
-            <div>
-              <p>Sorted by projections away</p>
-              {#each sortedStartersByProjections.away as starter}
-                <FormField align="end">
-                  <CheckBox
-                    cl
-                    style="padding: 5px;"
-                    touch
-                    checked={topThreeAway.find((i) => i.idx === starter.idx) !==
-                      undefined}
-                    on:change={(e) => toggleTop3(e, starter, "away")}
-                  />
-                  <span slot="label" style="height: 20px">
-                    {starter.name} - {starter.points}</span
-                  >
-                </FormField>
-              {/each}
-            </div>
-          </div>
-        </div>
-        <div class="flex-container">
-          <div class="half">
-            <ol class="horizontal-list">
-              {#each topThreeHome as topHome}
-                <li>{topHome.name}</li>
-              {/each}
-            </ol>
-          </div>
-          <div class="half">
-            <ol class="horizontal-list">
-              {#each topThreeAway as topAway}
-                <li>{topAway.name}</li>
-              {/each}
-            </ol>
-          </div>
-        </div>
-        <div class="flex-container" style="padding: 0px;">
-          <!-- <div> -->
-          <!-- <Textfield
-            textarea
-            style="width: 100%; margin-bottom: 5px;"
-            bind:value={fantasyImplications}
-            label="Fantasy Implications..."
-            disabled={!home}
-          /> -->
-          <!-- <Textfield
-              textarea
-              style="width: 100%; margin-bottom: 5px;"
-              bind:value={homeLessonsLearned}
-              label="Lessons Learned..."
-              disabled={!home}
-            /> -->
           <Textfield
             textarea
-            style="width: 100%; margin-bottom: 5px;"
+            style="width: 50%; margin: 10px 0px;"
             bind:value={homeTurningPoints}
             label="Turning Points/Critical Moments..."
             disabled={!home}
           />
           <Textfield
             textarea
-            style="width: 100%; margin-bottom: 5px;"
+            style="width: 50%; margin: 10px 0px;"
             bind:value={homeBenchProblems}
             label="Bench/Roster Challenges..."
             disabled={!home}
           />
         </div>
-        <div class="flex-container" style="padding: 0px;">
-          <!-- <Textfield
-            textarea
-            style="width: 100%; margin-bottom: 5px;"
-            bind:value={awayFantasyImplications}
-            label="Fantasy Implications..."
-            disabled={!home}
-          /> -->
+        <div class="flex-container" style="margin-bottom: 10px;">
           <Textfield
             textarea
-            style="width: 100%; margin-bottom: 5px;"
+            style="width: 50%;"
             bind:value={awayTurningPoints}
             label="Turning Points/Critical Moments..."
             disabled={!home}
           />
           <Textfield
             textarea
-            style="width: 100%; margin-bottom: 5px;"
+            style="width: 50%;"
             bind:value={awayBenchProblems}
             label="Bench/Roster Challenges..."
             disabled={!home}
           />
-          <!-- </div> -->
         </div>
         <Textfield
           textarea
-          style="width: 100%; margin-bottom: 5px;"
+          style="width: 100%; margin-bottom: 10px"
           bind:value={lessonsLearned}
           label="Lessons Learned..."
           disabled={!home}
         />
         <Textfield
           textarea
-          style="width: 100%; margin-bottom: 5px;"
+          style="width: 100%; margin-bottom: 10px"
           bind:value={fantasyImplications}
           label="Fantasy Implications"
           disabled={!home}
         />
-        <Button style="width: 100%" on:click={submit} variant="raised">
+
+        <div class="half">
+          <FormField align="end">
+            <Slider bind:value={spiceLevel} min={0.4} max={2.0} step={0.1} />
+            <span
+              slot="label"
+              style="padding-right: 12px; width: max-content; display: block;"
+            >
+              Spice Level
+            </span>
+          </FormField>
+          <p>{spiceLevel}</p>
+        </div>
+
+        <Button
+          style="width: 100%; margin-top: 10px;"
+          on:click={submit}
+          variant="raised"
+          disabled={disableGenerate}
+        >
           <Label>Generate</Label>
         </Button>
+
+        {#if rundown}
+          <p class="rundown">{rundown}</p>
+        {/if}
       </div>
     </div>
   </div>
@@ -507,6 +520,7 @@
 
   .scores-container {
     position: relative;
+    width: 80%;
   }
 
   .scores {
@@ -515,17 +529,15 @@
   }
 
   .score-box {
-    margin-left: 50px;
-    margin-right: 50px;
-    min-width: 200px;
+    width: 50%;
   }
 
   .flex-container {
     width: 100%;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     justify-content: space-evenly;
-    padding: 10px;
+    /* padding: 10px; */
   }
 
   .horizontal-list {
@@ -533,7 +545,11 @@
     flex-direction: row;
     flex-wrap: wrap;
     list-style-position: inside;
-    padding-left: 0;
+    padding-left: 5px;
+    border-bottom: 1px solid gold;
+    font-size: 20px;
+    font-weight: 600;
+    /* min-height: 25px; */
   }
 
   .horizontal-list li {
@@ -542,5 +558,12 @@
 
   .half {
     width: 50%;
+  }
+
+  .rundown {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 10px 0px;
   }
 </style>
