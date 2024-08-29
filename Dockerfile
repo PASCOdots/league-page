@@ -1,19 +1,23 @@
-FROM node:14-alpine
+FROM node:18.20.4-alpine3.20
 
 WORKDIR /app
 
-# Install required deps
-COPY package.json package-lock.json ./
-RUN npm ci
+# # Copy package.json and package-lock.json (or yarn.lock)
+# COPY package*.json ./
 
-# Copy in source and build the app
-COPY . .
-RUN npm run build-docker
+# Install dependencies
+# RUN npm install --production
 
-EXPOSE 3000
+# Copy the build output into the container
 
-# Wrap Node.js with Tini since it wasn't designed to be run as PID 1
-# https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#handling-kernel-signals
-RUN apk add --no-cache tini
-ENTRYPOINT ["tini", "--"]
-CMD ["node", "./build"]
+COPY build/ /app/build
+COPY .env /app/.env
+
+# Expose the port the app runs on
+# EXPOSE 3000
+
+# Run the application
+CMD ["node", "-r", "dotenv/config", "build"]
+
+# docker build -t reg.thrive.pascohh.com/league_front:latest .
+# docker push reg.thrive.pascohh.com/league_front:latest
